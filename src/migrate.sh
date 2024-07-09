@@ -4,14 +4,12 @@ set -e
 
 # Constants
 MIGRATION_WORKDIR="./repositoryPool"
-GITHUB_TOKEN="" # Add Github access token
-GITHUB_USERNAME="" # Add Github username
-FROM="http://git.bbcag.ch/inf-bl/zh/2023" 
-GITLAB_SSH="ssh://git@git.bbcag.ch:2222/inf-bl/zh/2023"
+GITHUB_TOKEN=""
+GITHUB_USERNAME=""
+FROM=""
+GITLAB_SSH=""
 TO="https://github.com/${GITHUB_USERNAME}"
-REPOS=(
-    ""
-) # Add paths to repositories
+REPOS=()
 
 # Ensure GitHub CLI is installed
 if ! command -v gh &> /dev/null; then
@@ -39,17 +37,17 @@ for REPO in "${REPOS[@]}"; do
     # Check for existing GitHub repository
     if gh repo view "${REPO_NAME}" &> /dev/null; then
         echo "GitHub repository ${REPO_NAME} already exists."
-        read -p "Do you want to overwrite the existing repository? (y/n): " choice
+        read -p "Do you want to overwrite the existing repository? (y/N): " choice
         if [ "$choice" = "y" ]; then
             gh repo delete "${REPO_NAME}" --confirm
-            gh repo create "${REPO_NAME}" --public
+            gh repo create "${REPO_NAME}" --private
         else
             echo "Skipping repository: ${REPO_NAME}"
             cd ..
             continue
         fi
     else
-        gh repo create "${REPO_NAME}" --public
+        gh repo create "${REPO_NAME}" --private
     fi
 
     # Check and remove existing remotes if present
